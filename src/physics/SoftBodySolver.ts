@@ -1,12 +1,10 @@
-// ============================================================================
-// [MODULE 2] PHYSICS ENGINE CORE (Local: Copy to src/physics/SoftBodySolver.ts)
-// ============================================================================
+import { SolverParams } from '../types';
 
 /**
  * XPBD Soft Body Solver
  * Manages raw memory buffers for high-performance physics simulation.
  */
-class SoftBodySolver {
+export class SoftBodySolver {
     // --- Particle Data (SoA - Structure of Arrays) ---
     numParticles: number = 0;
     pos: Float32Array;      // Position [x, y, z, ...]
@@ -163,9 +161,6 @@ class SoftBodySolver {
             }
 
             // --- 2. Solve Constraints (The XPBD Heart) ---
-            // We will fill this in fully in the next step.
-            // For now, let's just do a basic Distance Constraint solve
-            // so the cloth doesn't fall apart immediately.
             this.solveDistanceConstraints(sdt);
 
             // --- 3. Update Velocity ---
@@ -181,7 +176,6 @@ class SoftBodySolver {
         }
     }
 
-    // Basic PBD Distance Solver (Placeholder for full XPBD)
     solveDistanceConstraints(dt: number) {
         for (let i = 0; i < this.numDistanceConstraints; i++) {
             const p1 = this.distanceConstraints[i * 2];

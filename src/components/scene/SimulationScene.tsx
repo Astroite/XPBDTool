@@ -1,8 +1,18 @@
-// ============================================================================
-// [MODULE 5] 3D SCENE COMPONENTS
-// ============================================================================
+import React, { useRef, useEffect } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { Grid, GizmoHelper, GizmoViewport } from '@react-three/drei';
+import * as THREE from 'three';
+import { SolverParams, ViewParams } from '../../types';
+import { SoftBodySolver } from '../../physics/SoftBodySolver';
 
-const SimulationScene = ({ isPlaying, solverParams, viewParams, solverRef }: { isPlaying: boolean, solverParams: SolverParams, viewParams: ViewParams, solverRef: React.MutableRefObject<SoftBodySolver> }) => {
+interface SimulationSceneProps {
+    isPlaying: boolean;
+    solverParams: SolverParams;
+    viewParams: ViewParams;
+    solverRef: React.MutableRefObject<SoftBodySolver>;
+}
+
+const SimulationScene: React.FC<SimulationSceneProps> = ({ isPlaying, solverParams, viewParams, solverRef }) => {
     const meshRef = useRef<THREE.Mesh>(null);
     const geometryRef = useRef<THREE.BufferGeometry>(null);
 
@@ -18,12 +28,11 @@ const SimulationScene = ({ isPlaying, solverParams, viewParams, solverRef }: { i
             geometryRef.current.setIndex(new THREE.BufferAttribute(solver.indices, 1));
             geometryRef.current.computeVertexNormals();
         }
-    }, []); // Run once on mount
+    }, [solverRef]); // Run once on mount
 
     // Animation Loop
-    useFrame((state, delta) => {
+    useFrame(() => {
         const solver = solverRef.current;
-        const mesh = meshRef.current;
         const geo = geometryRef.current;
 
         // 1. Step Physics
@@ -33,7 +42,7 @@ const SimulationScene = ({ isPlaying, solverParams, viewParams, solverRef }: { i
         }
 
         // 2. Sync Physics -> Render
-        if (mesh && geo) {
+        if (geo) {
             // Mark attributes as needing update
             geo.attributes.position.needsUpdate = true;
             // Recalculate normals for lighting
@@ -73,3 +82,5 @@ const SimulationScene = ({ isPlaying, solverParams, viewParams, solverRef }: { i
         </>
     );
 };
+
+export default SimulationScene;
